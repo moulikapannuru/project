@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebCertGen</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>WebCertGen: Automated Certificate Generation for Webinars</h1>
+    </header>
+    <main>
+        <!-- Form to input webinar details -->
+        <form id="webinarForm">
+            <label for="participantName">Participant Name:</label>
+            <input type="text" id="participantName" required>
+            <label for="webinarName">Webinar Name:</label>
+            <input type="text" id="webinarName" required>
+            <button type="submit">Generate Certificate</button>
+        </form>
+        <!-- Display generated certificate -->
+        <div id="certificateDisplay" style="display: none;">
+            <h2>Certificate Generated!</h2>
+            <p id="certificateContent"></p>
+        </div>
+    </main>
+    <script src="script.js"></script>
+</body>
+</html>
+styles.css: This file contains styles for the application.
+css
+Copy code
+body {
+    font-family: Arial, sans-serif;
+}
+
+header {
+    background-color: #333;
+    color: #fff;
+    padding: 1rem;
+    text-align: center;
+}
+
+main {
+    padding: 2rem;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+label {
+    margin-bottom: 0.5rem;
+}
+
+input {
+    padding: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+button {
+    padding: 0.5rem;
+    background-color: #333;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #555;
+}
+
+#certificateDisplay {
+    margin-top: 2rem;
+}
+script.js: This file contains client-side JavaScript to handle form submission and display the generated certificate.
+javascript
+Copy code
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('webinarForm');
+    const certificateDisplay = document.getElementById('certificateDisplay');
+    const certificateContent = document.getElementById('certificateContent');
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const participantName = document.getElementById('participantName').value;
+        const webinarName = document.getElementById('webinarName').value;
+
+        try {
+            const response = await fetch('/generateCertificate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ participantName, webinarName })
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to generate certificate');
+            }
+
+            const data = await response.json();
+            certificateContent.textContent = Certificate for ${data.participantName} for attending ${data.webinarName};
+            certificateDisplay.style.display = 'block';
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Failed to generate certificate. Please try again later.');
+        }
+    });
+});
+Backend (Node.js with Express)
+
+server.js: This file contains the backend logic using Node.js and Express.
+javascript
+Copy code
+const express = require('express');
+const bodyParser = require('body-parser');
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+app.use(bodyParser.json());
+
+// Endpoint to generate certificate
+app.post('/generateCertificate', (req, res) => {
+    const { participantName, webinarName } = req.body;
+    // Logic to generate certificate goes here
+    // For demonstration purposes, just return participantName and webinarName
+    res.json({ participantName, webinarName });
+});
+
+app.listen(PORT, () => {
+    console.log(Server is running on http://localhost:${PORT});
+});
